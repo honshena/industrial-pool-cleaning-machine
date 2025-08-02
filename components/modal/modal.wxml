@@ -1,0 +1,27 @@
+<!--components/modal/modal.wxml-->
+<view class="modal" hidden="{{isHidden}}">
+    <view hidden="{{!mask}}" class="modal-mask" style="height:{{pageHeight}}px;width:{{pageWidth}}px;"></view>
+    <view class="modal-wrapper">
+        <view class="modal-info">提示</view>
+        <view class="modal-area">
+            <input 
+                wx:if="{{type==='input'}}"
+                value="{{value}}"
+                type="{{inputType}}"
+                bindblur='inputBlur' 
+                bindinput="chageInput" 
+                placeholder="{{isInput?'':placeholder}}" 
+                class="modal-input" 
+                maxlength="4" 
+                bindfocus="inputFocus" />
+            <view wx:if="{{type==='text'}}" class="modal-text">{{placeholder}}</view>
+            <slot></slot>
+        </view>
+        <view class="{{hideCancel?'modal-btn modal-btn-single':'modal-btn'}}">
+            <view hidden="{{hideCancel}}" bindtap="handleCancel" class="modal-btn-cancel">{{cancelText?cancelText:'取消'}}</view>
+            <button wx:if="{{type==='privacy'}}" open-type="{{openType}}" bindtap="handleSure" class="modal-btn-sure" bindagreeprivacyauthorization="handleAgreePrivacyAuthorization">{{okText?okText:'确定'}}</button>
+            <view wx:else="" bindtap="handleSure" class="modal-btn-sure">{{okText?okText:'确定'}}</view>
+        </view>
+    </view>
+
+</view>
