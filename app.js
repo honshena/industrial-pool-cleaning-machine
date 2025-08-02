@@ -25,8 +25,10 @@ App({
   },
   //获取用户权限
   async getUserStting() {
+    // #if MP
     const res = await wx.getSetting()
     logInfo("用户给予小程序权限： ", res)
+    // #endif
   },
   //自动更新小程序
   autoUpdate() {

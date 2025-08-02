@@ -547,7 +547,7 @@ Page({
 
     //判断是否错误修改
     if (!input[inputInd] && input[inputInd] != 0) {
-      showToast("输入数据错误")
+      showToast("请输入数字")
       return
     }
     if ((input[inputInd] > 100 && 1 == inputInd) ||

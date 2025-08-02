@@ -60,7 +60,7 @@
   <view class="btn_control">
     <view bindtap="chooseDevice" class="container_device_name {{isConnect?'isConnect':'notConnect'}}"> {{isConnect? lastestConnecteddevice.deviceName?lastestConnecteddevice.deviceName:'未知设备':'选择设备'}} </view>
     <view bindtap="releaseBluetooth" class="{{isConnect?'close':'hid'}}">
-      <image class="" src="{{isConnect?'./../v3./icon/bluetoothconnect.png':'../../v3/icon/bluetoothdisconnect.png'}}"></image>
+      <image class="" src="{{isConnect?'../../v3/icon/bluetoothconnect.png':'../../v3/icon/bluetoothdisconnect.png'}}"></image>
       <text>{{isConnect?'断开连接':''}}</text>
     </view>
   </view>
@@ -90,7 +90,11 @@
 <view class="inputInt" hidden="{{!isInput}}">
   <view class="in">提示</view>
   <view class="inputarea">
+    <!-- #if MP -->
     <input bindchange="chageInput" placeholder="{{inputPlaceholder}}" type="text" value="{{input[inputInd]}}"></input>
+    <!-- #elif NATIVE -->
+    <input bindinput="chageInput" placeholder="{{inputPlaceholder}}" type="text" value="{{input[inputInd]}}"></input>
+    <!-- #endif -->
   </view>
   <view class="click">
     <view bindtap="hidInput" class="cancel">取消</view>

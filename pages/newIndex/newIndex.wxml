@@ -15,9 +15,13 @@
   <view class="page-content" style="min-height:{{pageContenHeight}}px">
     <view class="top">
       <view class="top-setting">
-        <view class="top-setting__image-wrapper-left" bindtap="sendStr" data-str="1">
+        <view wx:if="{{utils.judgeDeviceModel(input[5],model_select_show)}}" class="top-setting__image-wrapper-left" bindtap="sendStr" data-str="1">
           <!-- <image src="../../icon/clean.png" class="top-setting__image-left" /> -->
-          {{model=='爬墙'||model==='PQ420'?input[10]? '不爬墙':'爬墙' : input[10]? '关泵': '开泵'}}
+          {{input[10]? '不爬墙':'爬墙' }}
+        </view>
+        <view wx:else class="top-setting__image-wrapper-left" bindtap="sendStr" data-str="1">
+          <!--其他机型非pq420或者又爬墙的机型-->
+          {{input[10]? '关泵': '开泵'}}
         </view>
         <view class="top-setting__image-wrapper-center">
           <view class="top-setting__image-wrapper-center__item top-setting__image-wrapper-center__ultrasonic" wx:if="{{input[11]!=255}}">
@@ -48,18 +52,20 @@
           <view class="top-controller__item__bac" bindtap="showInput" data-i="2">
             <image src="../../icon/sensitivity.png" class="top-controller__item__icon"></image>
           </view>
-          <view class="top-controller__meaning"> {{model=='爬墙' || model === 'PQ420'?'爬墙时间':'灵敏度'}} </view>
+          <view class="top-controller__meaning"> {{utils.judgeDeviceModel(input[5],model_select_show)?'爬墙时间':'灵敏度'}} </view>
           <view class="top-controller__value">{{input[2]?input[2]:'0/100'}}</view>
         </view>
         <view class="top-controller__item">
-          <picker bindchange="changeModel" data-i="5" mode="selector" range="{{model_select}}">
+          <picker bindchange="changeModel" data-i="5" mode="selector" range="{{model_select_show}}" range-key="label">
             <view class="top-controller__item__bac">
               <image src="../../icon/model.png" class="top-controller__item__icon"></image>
             </view>
           </picker>
 
           <view class="top-controller__meaning">{{/*机型*/}} </view>
-          <view class="top-controller__value">{{model_select[input[5] ? input[5] - 1 : 0]}}</view>
+          <view class="top-controller__value">
+            {{utils.getDeviceModel(input[5],model_select_show)}}
+          </view>
         </view>
         <view class="top-controller__item">
           <view class="top-controller__item__bac" bindtap="showInput" data-i="3">

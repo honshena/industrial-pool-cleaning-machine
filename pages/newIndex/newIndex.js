@@ -2,7 +2,8 @@ const {
   DEVICENAME,
   UNKNOWNDEVICE,
   PAGE_VERSION,
-  SHOWPAGE,
+  Models,
+  OldModels,
   PAGE_KEYS,
   changePageVersion,
 } = require('../../config/const.js')
@@ -46,6 +47,7 @@ const {
   showToast,
   resAndInfo,
   requestJSONFile,
+  setInputStorage,
   ab2str,
   ab2hex,
 } = require('../../utils/utils.js'),
@@ -65,9 +67,8 @@ Page({
       name: '',
       deviceName: '',
     },
-    old_model_select: ["双体", "单体", "爬墙"],
-    model_select: ["PQ420", "K600", "K600GT", "K600X2", "K600GTX2", "K1200"],
-    model: "PQ420",
+    // 显示的机型和值已经不是靠下标对应了,因此现在使用model_select_show来记录显示和对应的值
+    model_select_show: Models,
     devices: [
       // 测试ui使用
       // {
@@ -90,6 +91,7 @@ Page({
     inputPlaceholder: '',
     //记录每个操作数据
     /**各索引对应数据意义
+     * 0: 暂无
      * 1: 左电机
      * 2: 灵敏度
      * 3: 右电机
@@ -168,7 +170,6 @@ Page({
       lastestConnecteddevice,
       isConnect: false, //初始化未连接设备
       input, //设备配置
-
     })
 
 
@@ -382,8 +383,12 @@ Page({
       }, acceptMAXInterval)
     }
   },
+  firstBLEResolvePackage: true,
   BLEResolvePackage(arr) {
-    // logInfo('BLEResolvePackage: ', arr)
+    if (this.firstBLEResolvePackage) {
+      logInfo('newIndex.BLEResolvePackage[首次解包]: ', arr)
+    }
+
     let check = isAcceptDataValid(arr)
     if (!check && !this.alreadyWarnController) {
       this.packageErrorCount += 1;
@@ -404,7 +409,9 @@ Page({
     //拆包
     this.resolvePackage(arr)
     //重置接收包的时间
-    this.lastAcceptPackage = new Date()
+    this.lastAcceptPackage = new Date();
+    // 将第一次解包置为false
+    this.firstBLEResolvePackage = false;
   },
   alreadyWarnH: new Array(8), //报警位是否报警标识
   alreadyWarnL: new Array(8), //报警位是否报警标识
@@ -431,12 +438,13 @@ Page({
     */
     // --- ota相关逻辑取消 end
     // 根据设备的版本号选择显示不同的机型,如果软件版本号小于等于2则显示老设备
+    // 设置机型的模式
     if (arr[1] <= 2) {
-      // 仅当model_select是显示的新的机型(6种)时才更新为老机型(3种)
-      if (this.data.model_select.length !== 3) {
+      // 仅当model_select_show是显示的新的机型(6种)时才更新为老机型(3种)
+      if (this.data.model_select_show.length !== 3) {
         this.setData({
-          model_select: this.data.old_model_select,
-        })
+          model_select_show: OldModels
+        });
       }
     }
     //报警位H和L
@@ -499,6 +507,9 @@ Page({
     // 需要更新input
     if (needUpdateInput) {
       // console.log('set input', input)
+      if (this.firstBLEResolvePackage) {
+        logInfo('newIndex.resolvePackage首次解包后设置设备配置:', input)
+      }
       this.setData({
         input,
       })
@@ -693,10 +704,11 @@ Page({
       }
       this.oldSetting.delete(k);
       // 通过校验后存储设置到本地
-      wx.setStorage({
-        key: "input",
-        data: input
-      });
+      // wx.setStorage({
+      //   key: "input",
+      //   data: input
+      // });
+      setInputStorage(input)
     }
     this.needSettingCheck = false;
     return true;
@@ -959,7 +971,7 @@ Page({
         // 机型
         needSettingCheck = true;
         inputInd = 5;
-        logInfo(`用户[点击]${input[5]===3?input[10]? '不爬墙':'爬墙' : input[10]? '不开泵': '开泵'}`);
+        logInfo(`用户[点击]${input[5]===1?input[10]? '不爬墙':'爬墙' : input[10]? '不开泵': '开泵'}`);
         break;
       case '2':
         // 3 5 8 时间
@@ -1044,10 +1056,11 @@ Page({
       showToast("请输入正确数值")
       return
     }
-    wx.setStorage({
-      key: "input",
-      data: input
-    });
+    // wx.setStorage({
+    //   key: "input",
+    //   data: input
+    // });
+    setInputStorage(input);
     const prefix = "f".charAt().charCodeAt() + parseInt(inputInd) - 1;
     let data = parseInt(newInput[inputInd]);
     //安全时间需要除以10取整
@@ -1075,11 +1088,25 @@ Page({
     //     }
     // }, 500)
   },
+  // 返回当前用户选择机型的模式,是爬墙还是开泵
+  judgeDeviceModel(model = this.data.input[5], models = this.data.model_select_show) {
+    const currentModel = models.find(v => v.value === model);
+    if (currentModel) {
+      if (currentModel.label === '爬墙' || currentModel.label === 'PQ420' || currentModel.label === 'PQ420x2') {
+        return 'paqiang'
+      } else {
+        return 'kaibeng'
+      }
+    }
+    return 'unknow'
+  },
 
   //用户点击选择机型
   changeModel(e) {
-    var data = parseInt(e.detail.value) + 1;
-    logInfo(`用户[点击]选择机型, 更改机型为: [${this.data.model_select[data - 1]}], index.changeModel`);
+    const dataIndex = parseInt(e.detail.value);
+    const modelData = this.data.model_select_show[dataIndex]
+    const data = modelData.value
+    logInfo(`index.changeModel用户[点击]选择机型, 更改机型为: [${modelData.label}]`);
     let input = [...this.data.input];
     input[5] = data;
     this.newInput = input;
@@ -1088,17 +1115,12 @@ Page({
     this.setData({
       input,
       inputInd: 5,
-      model: this.data.model_select[data - 1]
     })
     this.handleInput();
   },
 
   //修改配置
   chageInput: function (value) {
-    const {
-      model,
-      model_select
-    } = this.data
     const inputInd = parseInt(this.data.inputInd),
       input = [...this.data.input];
     let errFlag = false;
@@ -1118,7 +1140,7 @@ Page({
       errFlag = true
     }
     if (input[inputInd] > 100 && 2 == inputInd || input[inputInd] < 0 && 2 == inputInd) {
-      if (model == model_select[2])
+      if (this.judgeDeviceModel() === 'paqiang')
         showToast("爬墙时间范围: 0 ~ 100")
       else
         showToast("灵敏度范围: 0 ~ 100")
@@ -1172,9 +1194,7 @@ Page({
     const index = e.currentTarget.dataset.i;
     let {
       inputPlaceholder,
-      model,
       input,
-      model_select
     } = this.data;
     //上报用户点击输入框按钮的行为
     switch (index) {
@@ -1183,7 +1203,7 @@ Page({
         logInfo('用户[点击]设置左电机转速');
         break;
       case '2':
-        if (model === model_select[2]) {
+        if (this.judgeDeviceModel() === 'paqiang') {
           inputPlaceholder = '输入爬墙时间: 1-100'
           logInfo('用户[点击]设置爬墙时间');
         } else {

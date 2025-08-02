@@ -1,8 +1,40 @@
 var convertToCurrent = function (num) {
-    return (parseInt(num) / 10).toFixed(1);
+  return (parseInt(num) / 10).toFixed(1);
 }
 var mul10 = function (num) {
-    return parseInt(num) * 10;
+  return parseInt(num) * 10;
+}
+var judgeDeviceModel = function (model, models) {
+  var currentModel;
+  for (var i = 0; i < models.length; i++) {
+    if (models[i].value === model) {
+      currentModel = models[i]
+    }
+  }
+  if (currentModel) {
+    if (currentModel.label === '爬墙' || currentModel.label === 'PQ420' || currentModel.label === 'PQ420x2') {
+      return true
+    } else {
+      return false
+    }
+  }
+  return false
+}
+
+var getDeviceModel = function (model, models) {
+  var currentModel;
+  for (var i = 0; i < models.length; i++) {
+    if (models[i].value === model) {
+      currentModel = models[i]
+    }
+  }
+  if (currentModel) {
+    return currentModel.label
+  }
+  return '未知'
 }
 module.exports.convertToCurrent = convertToCurrent // 将传入的数字转为电流 
 module.exports.mul10 = mul10; // 将传入的数字乘10
+
+module.exports.judgeDeviceModel = judgeDeviceModel; //判断当前的机型和模式是爬墙还是开泵
+module.exports.getDeviceModel = getDeviceModel; // 获取当前机型的名称

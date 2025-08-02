@@ -113,6 +113,12 @@ const
   },
   //设置硬件配置缓存
   setInputStorage = (storage) => {
+    wx.setStorage({
+      key: INPUTCONFIG,
+      data: storage
+    })
+  },
+  setInputStorageSync = (storage) => {
     wx.setStorageSync(INPUTCONFIG, storage)
   },
   //返回硬件配置缓存
@@ -203,6 +209,7 @@ module.exports = {
   clearLocationStorage,
   //设置硬件配置缓存
   setInputStorage,
+  setInputStorageSync,
   //返回硬件配置缓存
   getInputStorage,
   //清除硬件配置缓存

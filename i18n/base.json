@@ -1,0 +1,11 @@
+{
+	"ios": {
+		"name": "水龟Sweeper"
+	},
+	"android": {
+		"name": "水龟Sweeper"
+	},
+	"common": {
+		"name": "水龟Sweeper"
+	}
+}
