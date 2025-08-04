@@ -39,17 +39,24 @@ Page({
   async onLoad(onLoadInfo) {
     this.showPage()
   },
-  async showPage() {
+  async showPage({
+    retry
+} = {}) {
     const pageKey = wx.getStorageSync(SHOWPAGE) || 'lastest';
     const url = '/' + PAGE_VERSION[pageKey]?.path
     wx.redirectTo({
-      url,
-      success: (res) => {
-        logWarn(`跳转至页面: ${url}`, res)
-      },
-      fail: err => {
-        console.log(err);
-      }
+        url,
+        success: (res) => {
+            logWarn(`跳转至页面: ${url}`, res)
+        },
+        fail: err => {
+            console.log('小程序跳转页面错误', err);
+            if (retry) {
+                this.showPage({
+                    retry: false
+                })
+            }
+        }
     })
-  },
+},
 });

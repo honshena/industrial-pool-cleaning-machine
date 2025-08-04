@@ -7,7 +7,7 @@
         "compileHotReLoad": true,
         "preloadBackgroundData": false
     },
-    "projectname": "shuigui_sweeper",
+    "projectname": "工业水池清洗机",
     "condition": {
         "miniprogram": {
             "list": [

@@ -6,15 +6,15 @@
         <view style="height: {{statusBarHeight}}px"></view>
         <!--自定义导航栏-->
         <view class="navigation-bar" style="height: {{navigationBarHeight}}px;">
-            <view class="navigation-title" style="line-height:{{navigationBarHeight}}px;">吸污机
+            <view class="navigation-title" style="line-height:{{navigationBarHeight}}px;">
                 <view class="navigation-title-info" bind:tap="changeVersion">{{envVersion+" "+version}}</view>
             </view>
         </view>
     </view>
     <view class="page-content" style="min-height:{{pageContenHeight}}px">
         <view class="ad">
-            <view class="bac" style="top: {{-1*(statusBarHeight+navigationBarHeight)}}px;height: {{statusBarHeight+navigationBarHeight+20}}px;width: {{(statusBarHeight+navigationBarHeight+20)*1080/536}}px;" />
-            <view class="phone" style="height: 20px;" bind:tap="copyPhone">TEL：13213560009</view>
+            <view class="bac" style="top: {{-1*(navigationBarHeight)}}px;height: {{navigationBarHeight+20}}px;width: {{(navigationBarHeight+20)*1080/536}}px;" />
+            <view class="phone" style="height: 12px;padding-top: 20px;font-size: 12px;" bind:tap="copyPhone">TEL：13213560009</view>
         </view>
         <view class="top">
             <view class="top-setting">

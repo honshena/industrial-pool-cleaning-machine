@@ -1,6 +1,5 @@
 <view class="head_title" hidden="{{titleHidden}}">
   <view class="title_text">
-    吸污机
     <view class="info" bind:tap="changeVersion">{{envVersion+" "+version}}</view>
   </view>
 
